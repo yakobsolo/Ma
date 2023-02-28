@@ -233,7 +233,7 @@ class _CartCardState extends State<CartCard> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.red,
-                                  content: Row(
+                                  content:  Row(
                                     children: <Widget>[
                                       Icon(
                                         Icons.check_circle,

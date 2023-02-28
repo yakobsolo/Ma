@@ -319,13 +319,14 @@ class _CartPageState extends State<CartPage> {
                       }
                       // print("diag");
                       dynamic userData = await openDiag();
-
+                      print(userData);
                       if (userData['name'] != null &&
                           userData['email'] != null &&
-                          userData['phone'] != null &&
+                          userData['phoneNumber'] != null &&
                           userData['name'] != "" &&
                           userData['email'] != "" &&
                           userData['phoneNumber'] != "") {
+                        // print(userData);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (BuildContext context) => UsePaypal(
@@ -341,11 +342,11 @@ class _CartPageState extends State<CartPage> {
                                     "amount": {
                                       "total": totalPrice,
                                       "currency": "USD",
-                                      "details": const {
-                                        // "subtotal": '10.12',
-                                        "shipping": '0',
-                                        "shipping_discount": 0
-                                      }
+                                      // "details": const {
+                                      //   // "subtotal": '10.12',
+                                      //   "shipping": '0',
+                                      //   "shipping_discount": 0
+                                      // }
                                     },
                                     "description":
                                         "The payment transaction description.",

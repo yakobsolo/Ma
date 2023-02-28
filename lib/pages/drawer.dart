@@ -74,8 +74,9 @@ class DrawerPage extends StatelessWidget {
                 print("app");
                 print(jsonDecoded);
                 for (var data in jsonDecoded) {
-                  int sub = data['subTotal'];
-                  total += sub;
+                  int q = data['quantity'];
+                  int pr = data['price'];
+                  total += (q * pr);
                 }
                 print(total);
               }

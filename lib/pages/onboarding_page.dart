@@ -98,7 +98,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               children: [
                                 Text(
                                   tab.title,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 27,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
@@ -108,7 +108,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                 // ),
                                 Text(
                                   tab.subtitle,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white70, fontSize: 17),
                                   textAlign: TextAlign.center,
                                 ),

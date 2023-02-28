@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
                 "/": (context) => RestaurantPage(
                       demoCategoryMenus: product,
                     ),
-                "/splash": (context) => SplashScreen(),
+                "/splash": (context) => const SplashScreen(),
               },
             );
           }
