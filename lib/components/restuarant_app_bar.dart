@@ -12,9 +12,11 @@ class RestaurantAppBAr extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      foregroundColor: Colors.white,
+      surfaceTintColor: Colors.orange,
       pinned: true,
-      expandedHeight: 200,
-      backgroundColor: Colors.white,
+      expandedHeight: 340,
+      backgroundColor: Colors.orange,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Image.asset(
@@ -22,20 +24,24 @@ class RestaurantAppBAr extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      
+
       // leading: Padding(
       //   padding: EdgeInsets.only(left: 16),
       //   child: Icon(Icons.menu),
       // ),
       actions: [
         GestureDetector(
-            onTap: () {
-              Get.toNamed(RouteHelper.getCart());
-            },
-            child: Icon(Icons.shopping_cart_outlined)),
+          onTap: () {
+            Get.toNamed(RouteHelper.getCart());
+          },
+          child: Container(),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Icon(Icons.search),
+          child: Icon(
+            Icons.shopping_cart,
+            color: Colors.white,
+          ),
         )
       ],
     );

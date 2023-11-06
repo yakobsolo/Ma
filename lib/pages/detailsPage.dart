@@ -23,7 +23,6 @@ class RecommendFoodDetail extends StatefulWidget {
 
 class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
   int quantity = 1;
-  //decremnet
   void decrement() {
     setState(() {
       if (quantity > 1) {
@@ -34,16 +33,16 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
 
   void increment() {
     setState(() {
-      if (quantity >= 20 ) {
+      if (quantity >= 20) {
         Get.snackbar(
-            'Quantity Alert',
-            'You can not increase no more!',
-            snackPosition: SnackPosition.TOP,
-            isDismissible: true,
-            duration: Duration(seconds: 1),
-            backgroundColor: AppColors.mainColor,
-            colorText: Colors.white,
-          );
+          'Quantity Alert',
+          'You can not increase no more!',
+          snackPosition: SnackPosition.TOP,
+          isDismissible: true,
+          duration: Duration(seconds: 1),
+          backgroundColor: AppColors.mainColor,
+          colorText: Colors.white,
+        );
         quantity = 20;
       } else {
         quantity += 1;
@@ -54,14 +53,11 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
   void addToCart() {
     if (quantity > 0) {
       final shop = context.read<Shop>();
-
       shop.addToCart(0, quantity);
-
       showDialog(
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-                
                 backgroundColor: AppColors.mainColor,
                 content: const Text(
                   "Successfully added to cart",
@@ -72,7 +68,6 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                   IconButton(
                       onPressed: () {
                         Navigator.pop(context);
-
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.done)),
@@ -84,8 +79,9 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
   @override
   Widget build(BuildContext context) {
     final longtext =
-        "galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
+        "Galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
     return Scaffold(
+      backgroundColor: Colors.white,
       body: CustomScrollView(slivers: [
         SliverAppBar(
           automaticallyImplyLeading: false,
@@ -96,21 +92,33 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                   onTap: () {
                     Get.toNamed(RouteHelper.getInitial());
                   },
-                  child: AppIcon(icon: Icons.clear)),
+                  child: AppIcon(
+                    icon: Icons.clear,
+                    iconColor: Colors.white,
+                    backgroundColor: Colors.orange,
+                  )),
               GestureDetector(
                   onTap: () {
                     Get.toNamed(RouteHelper.getCart());
                   },
-                  child: AppIcon(icon: Icons.shopping_cart_outlined))
+                  child: AppIcon(
+                    icon: Icons.shopping_cart_outlined,
+                    iconColor: Colors.white,
+                    backgroundColor: Colors.orange,
+                  ))
             ],
           ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(40),
             child: Container(
               child: Center(
-                child: BigText(
-                  text: "tbs ethiopian",
-                  size: Dimensions.font20,
+                child: Text(
+                  "Tibs Ethiopia",
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.orange,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               width: double.maxFinite,
@@ -124,7 +132,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             ),
           ),
           pinned: true,
-          backgroundColor: AppColors.mainColor,
+          backgroundColor: Colors.orange,
           expandedHeight: 300,
           flexibleSpace: FlexibleSpaceBar(
             background: Image.asset(
@@ -144,7 +152,10 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                     right: Dimensions.width30),
                 child: ExpandableText(
                   longtext,
-                  style: TextStyle(height: 2),
+                  style: TextStyle(
+                    height: 2,
+                    color: Colors.grey,
+                  ),
                   expandText: 'show more',
                   collapseText: 'show less',
                   maxLines: 5,
@@ -172,13 +183,13 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                 },
                 child: AppIcon(
                     iconColor: Colors.white,
-                    backgroundColor: AppColors.mainColor,
+                    backgroundColor: Colors.orange,
                     icon: Icons.remove),
               ),
               BigText(
                 size: Dimensions.font26,
-                text: "\$12.88 " + " X " + " ${quantity}",
-                color: Colors.black,
+                text: "12.88 " + "x" + " ${quantity}",
+                color: Colors.orange,
               ),
               GestureDetector(
                 onTap: () {
@@ -186,7 +197,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                 },
                 child: AppIcon(
                     iconColor: Colors.white,
-                    backgroundColor: AppColors.mainColor,
+                    backgroundColor: Colors.orange,
                     icon: Icons.add),
               ),
             ],
@@ -204,23 +215,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(Dimensions.radius20 * 2),
                   topRight: Radius.circular(Dimensions.radius20 * 2))),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Container(
-              padding: EdgeInsets.only(
-                  top: Dimensions.height20,
-                  bottom: Dimensions.height20,
-                  left: Dimensions.width30,
-                  right: Dimensions.width30),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Dimensions.radius20),
-                color: Colors.white,
-              ),
-              child: Icon(
-                Icons.favorite_outline,
-                color: AppColors.mainColor,
-              ),
-            ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             GestureDetector(
               onTap: () {
                 addToCart();
@@ -228,17 +223,26 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               },
               child: Container(
                 padding: EdgeInsets.only(
-                    top: Dimensions.height20,
-                    bottom: Dimensions.height20,
-                    left: Dimensions.width30,
-                    right: Dimensions.width30),
-                child: BigText(
-                  text: "\$10 | Add to cart",
-                  color: Colors.white,
+                  top: Dimensions.height20,
+                  bottom: Dimensions.height20,
+                  left: Dimensions.width30,
+                  right: Dimensions.width30,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.shopping_cart,
+                      color: Colors.white,
+                    ),
+                    BigText(
+                      text: "Add to cart",
+                      color: Colors.white,
+                    ),
+                  ],
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(Dimensions.radius20),
-                  color: AppColors.mainColor,
+                  color: Colors.orange,
                 ),
               ),
             )

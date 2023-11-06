@@ -13,9 +13,9 @@ class RestaurantCategories extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
-      height: 52,
-      child: Categories(onChanged: onChanged, selectedIndex: selectedIndex));
+        color: Colors.white,
+        height: 52,
+        child: Categories(onChanged: onChanged, selectedIndex: selectedIndex));
   }
 
   @override
@@ -47,7 +47,6 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
-  
   // int selectedIndex = 0;
   late ScrollController _controller;
   @override
@@ -92,12 +91,16 @@ class _CategoriesState extends State<Categories> {
                 // );
               },
               style: TextButton.styleFrom(
-                  primary: widget.selectedIndex == index
-                      ? Colors.black
-                      : Colors.black45),
+                primary: widget.selectedIndex == index
+                    ? Colors.deepOrange
+                    : Colors.orange,
+              ),
               child: Text(
                 demoCategoryMenus[index].category,
-                style: const TextStyle(fontSize: 20),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

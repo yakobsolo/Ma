@@ -93,9 +93,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       body: CustomScrollView(
         controller: scrollController,
         slivers: [
-          
           RestaurantAppBAr(),
-          SliverToBoxAdapter(child: RestaurantInfo()),
           SliverPersistentHeader(
             delegate: RestaurantCategories(
                 onChanged: scrollToCategory,
@@ -103,7 +101,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
             pinned: true,
           ),
           SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -116,8 +116,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: GestureDetector(
                                   onTap: () {
-                                    print(items[idx]);
-                                    Get.toNamed(RouteHelper.foodDetail, arguments: 0);
+                                    // print(items[idx]);
+                                    Get.toNamed(RouteHelper.foodDetail,
+                                        arguments: 0);
                                   },
                                   child: MenuCard(
                                       image: items[idx].image,

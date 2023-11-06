@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:foodly/routes/routed.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RestaurantInfo extends StatelessWidget {
   const RestaurantInfo({
@@ -10,6 +12,12 @@ class RestaurantInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    bool show = true;
+    if (deviceWidth <= 385) {
+      show = false;
+    }
+    // print("Device Width : ${deviceWidth}");
     return SizedBox(
       height: 170,
       child: Padding(
@@ -19,72 +27,110 @@ class RestaurantInfo extends StatelessWidget {
           children: [
             Text(
               "Maleda Market",
-              style: Theme.of(context).textTheme.headline6,
+              style: GoogleFonts.roboto(
+                fontSize: 22,
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: DefaultTextStyle(
                 style: const TextStyle(
                   fontSize: 16,
-                  color: Color(0xFF868686),
+                  color: Colors.orange,
                 ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-                    Text("\$\$"),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: CircleAvatar(
-                        radius: 2,
-                        backgroundColor: Color(0xFF868686),
-                      ),
-                    ),
-                    Text("Pure Ethiopian Food")
+                    Text("Pure Ethiopian Food"),
+                    // Text("Pure Ethiopian Food"),
                   ],
                 ),
               ),
             ),
             Row(
               children: [
-                const Text("People's Choice"),
+                const Text(
+                  "People's Choice",
+                  style: TextStyle(color: Colors.orange),
+                ),
                 const SizedBox(width: 8),
-                SvgPicture.asset("assets/icons/rating.svg"),
+                Icon(
+                  Icons.star,
+                  size: 18,
+                  color: Colors.orange,
+                ),
                 const SizedBox(width: 4),
-                const Text("200+ Users")
+                const Text(
+                  "200+ Users",
+                  style: TextStyle(color: Colors.orange),
+                )
               ],
             ),
             const Spacer(),
             Row(
               children: [
-                const InfoCard(
-                  svgSrc: "assets/icons/delivery.svg",
-                  title: "In-Store",
-                  subtitle: "Pickup",
+                Visibility(
+                  visible: show,
+                  child: const InfoCard(
+                    svgSrc: "assets/icons/delivery.svg",
+                    title: "In-Store",
+                    subtitle: "Pickup",
+                  ),
                 ),
-                const SizedBox(width: 16),
-                const InfoCard(
-                  svgSrc: "assets/icons/clock.svg",
-                  title: "15",
-                  subtitle: "Minutes Max",
+                Visibility(
+                  visible: show,
+                  child: const SizedBox(width: 16),
                 ),
-                const SizedBox(width: 24),
-                const Spacer(),
+                Visibility(
+                  visible: show,
+                  child: const InfoCard(
+                    svgSrc: "assets/icons/clock.svg",
+                    title: "15",
+                    subtitle: "Minutes Max",
+                  ),
+                ),
+                Visibility(
+                  visible: show,
+                  child: const SizedBox(width: 24),
+                ),
+                Visibility(
+                  visible: show,
+                  child: const Spacer(),
+                ),
                 OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    primary: const Color(0xFF22A45D),
-                    fixedSize: const Size(120, 40),
-                    side: const BorderSide(color: Color(0xFF22A45D)),
+                    primary: Colors.white,
+                    backgroundColor: Colors.green,
+                    fixedSize: const Size(125, 40),
+                    side: const BorderSide(color: Colors.white),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                   ),
                   child: GestureDetector(
-                    onTap: () => Get.toNamed(RouteHelper.getCart()),
-                    child: Text(
-                      "Take away".toUpperCase(),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
+                      onTap: () => Get.toNamed(RouteHelper.getCart()),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(
+                            CupertinoIcons.cart_fill,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          Text(
+                            "Cart".toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      )),
                 )
               ],
             ),
@@ -121,12 +167,16 @@ class InfoCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
+                color: Colors.green,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: Theme.of(context).textTheme.caption,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.green,
+              ),
             )
           ],
         )

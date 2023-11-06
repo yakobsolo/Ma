@@ -20,9 +20,9 @@ class MenuCategoryItem extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              fontSize: 18,
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              color: Colors.orange,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -62,9 +62,9 @@ class MenuCard extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.black,
+                    color: Colors.orange,
                   ),
                 ),
                 const Padding(
@@ -77,21 +77,26 @@ class MenuCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Text("\$\$"),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: CircleAvatar(
-                        radius: 2,
-                        backgroundColor: Colors.black38,
+                    // const Text("\$\$"),
+                    // const Padding(
+                    //   padding: EdgeInsets.symmetric(horizontal: 8),
+                    //   child: CircleAvatar(
+                    //     radius: 2,
+                    //     backgroundColor: Colors.black38,
+                    //   ),
+                    // ),
+                    const Text(
+                      "Chinese",
+                      style: TextStyle(
+                        color: Colors.orange,
                       ),
                     ),
-                    const Text("Chinese"),
                     const Spacer(),
                     Text(
-                      "USD$price",
+                      "\$${price}",
                       style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF22A45D),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
                       ),
                     )
                   ],

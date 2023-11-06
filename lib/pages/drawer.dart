@@ -13,57 +13,34 @@ class DrawerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      // backgroundColor: Colors.orange,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: BigText(
-              text: "Yakob Solomon",
-              color: Colors.white,
-            ),
-            accountEmail: SmallText(
-              text: "yakisolo2009@gmail.com",
-              color: Colors.white,
-            ),
+            accountName: Text(""),
+            accountEmail: Text(""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset("assets/images/f_0.png"),
               ),
             ),
             decoration: BoxDecoration(
-              color: AppColors.mainColor,
+              color: Colors.orange,
               // image: DecorationImage(image: AssetImage("assets/images/f_2.png"),fit: BoxFit.cover)
             ),
           ),
           ListTile(
-            leading: Icon(Icons.favorite_border_outlined),
-            title: BigText(
-              text: "Favorite",
-              size: Dimensions.font20 / 1.2,
+            leading: Icon(
+              Icons.home,
+              color: Colors.orange,
             ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: BigText(
-              text: "Notifications",
-              size: Dimensions.font20 / 1.2,
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(Icons.favorite_border_outlined),
-            title: BigText(
-              text: "Favorite",
-              size: Dimensions.font20 / 1.2,
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: Icon(Icons.shopping_cart),
-            title: BigText(
-              text: "Cart",
-              size: Dimensions.font20 / 1.2,
+            title: Text(
+              "Home",
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.orange,
+              ),
             ),
             onTap: () {
               Get.toNamed(
@@ -72,10 +49,14 @@ class DrawerPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: BigText(
-              text: "Signout",
-              size: Dimensions.font20 / 1.2,
+            leading: Icon(
+              Icons.shopping_cart,
+              color: Colors.orange,
+              size: 20,
+            ),
+            title: Text(
+              "Cart",
+              style: TextStyle(fontSize: 15, color: Colors.orange),
             ),
             onTap: () {},
           ),
