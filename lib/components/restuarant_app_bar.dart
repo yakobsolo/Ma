@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:foodly/pages/cartPage.dart';
 import 'package:foodly/routes/routed.dart';
 import 'package:foodly/widgets/app_icon.dart';
 import 'package:get/get.dart';
@@ -31,18 +35,32 @@ class RestaurantAppBAr extends StatelessWidget {
       // ),
       actions: [
         GestureDetector(
-          onTap: () {
-            Get.toNamed(RouteHelper.getCart());
+          onTap: () async {
+            FlutterSecureStorage storage = const FlutterSecureStorage();
+            var value = [];
+            var jsonString = await storage.read(key: "carts");
+
+            if (jsonString != null) {
+              var jsonDecoded = json.decode(jsonString);
+              value = jsonDecoded;
+            }
+
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CartPage(
+                  carts: value,
+                ),
+              ),
+            );
           },
-          child: Container(),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Icon(
-            Icons.shopping_cart,
-            color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
           ),
-        )
+        ),
       ],
     );
   }

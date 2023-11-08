@@ -43,9 +43,9 @@ class DrawerPage extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Get.toNamed(
-                RouteHelper.getCart(),
-              );
+              // Get.toNamed(
+              //   RouteHelper.getCart(),
+              // );
             },
           ),
           ListTile(

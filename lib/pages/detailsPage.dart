@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:foodly/models/menu.dart';
 import 'package:foodly/widgets/small_text.dart';
 import 'package:get/get.dart';
@@ -7,15 +10,14 @@ import 'package:provider/provider.dart';
 
 import '../models/shop.dart';
 import '../routes/routed.dart';
-import '../uttils/Dimensions.dart';
 import '../uttils/colors.dart';
 import '../widgets/app_icon.dart';
 import '../widgets/big_text.dart';
 
 class RecommendFoodDetail extends StatefulWidget {
-  final int i;
+  final Menu item;
 
-  const RecommendFoodDetail({required this.i, super.key});
+  const RecommendFoodDetail({required this.item, super.key});
 
   @override
   State<RecommendFoodDetail> createState() => _RecommendFoodDetailState();
@@ -23,63 +25,79 @@ class RecommendFoodDetail extends StatefulWidget {
 
 class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
   int quantity = 1;
-  void decrement() {
-    setState(() {
-      if (quantity > 1) {
-        quantity -= 1;
-      }
-    });
-  }
+  static FlutterSecureStorage storage = const FlutterSecureStorage();
 
-  void increment() {
-    setState(() {
-      if (quantity >= 20) {
-        Get.snackbar(
-          'Quantity Alert',
-          'You can not increase no more!',
-          snackPosition: SnackPosition.TOP,
-          isDismissible: true,
-          duration: Duration(seconds: 1),
-          backgroundColor: AppColors.mainColor,
-          colorText: Colors.white,
-        );
-        quantity = 20;
-      } else {
-        quantity += 1;
-      }
-    });
-  }
-
-  void addToCart() {
+  Future<void> addToCart() async {
+    var new_menu = {
+      "title": widget.item.title,
+      "description": widget.item.description,
+      "image": widget.item.image,
+      "price": widget.item.price,
+      "qtyLeft": widget.item.qtyLeft,
+      "itemPrice": (widget.item.price * quantity),
+      "quantitiy": quantity,
+    };
     if (quantity > 0) {
-      final shop = context.read<Shop>();
-      shop.addToCart(0, quantity);
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-                backgroundColor: AppColors.mainColor,
-                content: const Text(
-                  "Successfully added to cart",
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
+      var jsonData = await storage.read(key: 'carts');
+
+      if (jsonData != null) {
+        var jsonList = json.decode(jsonData);
+        jsonList.add(new_menu);
+        final jsonString = json.encode(jsonList);
+        await storage.write(key: 'carts', value: jsonString);
+      } else {
+        final jsonList = [new_menu];
+        final jsonString = json.encode(jsonList);
+        await storage.write(key: "carts", value: jsonString);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Row(
+            children: <Widget>[
+              Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                // Icon color
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Added to cart!',
+                style: TextStyle(
+                  color: Colors.white, // Text color
+                  fontSize: 14,
                 ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.done)),
-                ],
-              ));
+              ),
+            ],
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.item.qtyLeft < 1) {
+      quantity = 0;
+    }
     final longtext =
         "Galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
+
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    double width30 = screenWidth / 21.1;
+
+    double height10 = screenHeight / 84.4;
+    double height20 = screenHeight / 42.2;
+
+    double font26 = screenHeight / 29.48;
+
+    double radius20 = screenHeight / 42.2;
+
+    double bottomHeightBar = screenHeight / 7.03;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(slivers: [
@@ -90,7 +108,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             children: [
               GestureDetector(
                   onTap: () {
-                    Get.toNamed(RouteHelper.getInitial());
+                    // Get.toNamed(RouteHelper.getInitial());
                   },
                   child: AppIcon(
                     icon: Icons.clear,
@@ -99,7 +117,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                   )),
               GestureDetector(
                   onTap: () {
-                    Get.toNamed(RouteHelper.getCart());
+                    // Get.toNamed(RouteHelper.getCart());
                   },
                   child: AppIcon(
                     icon: Icons.shopping_cart_outlined,
@@ -113,7 +131,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             child: Container(
               child: Center(
                 child: Text(
-                  "Tibs Ethiopia",
+                  widget.item.title,
                   style: TextStyle(
                     fontSize: 22,
                     color: Colors.orange,
@@ -126,8 +144,8 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(Dimensions.radius20),
-                    topRight: Radius.circular(Dimensions.radius20),
+                    topLeft: Radius.circular(radius20),
+                    topRight: Radius.circular(radius20),
                   )),
             ),
           ),
@@ -135,8 +153,8 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
           backgroundColor: Colors.orange,
           expandedHeight: 300,
           flexibleSpace: FlexibleSpaceBar(
-            background: Image.asset(
-              "assets/images/f_0.png",
+            background: Image.network(
+              "https://maleda-backend.onrender.com/${widget.item.image}",
               width: double.maxFinite,
               fit: BoxFit.cover,
             ),
@@ -147,9 +165,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             children: [
               Container(
                 padding: EdgeInsets.only(
-                    top: Dimensions.height20,
-                    left: Dimensions.width30,
-                    right: Dimensions.width30),
+                    top: height20, left: width30, right: width30),
                 child: ExpandableText(
                   longtext,
                   style: TextStyle(
@@ -169,17 +185,44 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
       bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
           padding: EdgeInsets.only(
-              top: Dimensions.height10,
-              bottom: Dimensions.height10,
-              left: Dimensions.width30 * 2.5,
-              right: Dimensions.width30 * 2.5),
+              top: height10,
+              bottom: height10,
+              left: width30 * 2.5,
+              right: width30 * 2.5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GestureDetector(
                 onTap: () {
-                  decrement();
-                  // controller.setQuantity(false);
+                  setState(() {
+                    if (quantity < 1) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                // Icon color
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Minimum quantity reached!',
+                                style: TextStyle(
+                                  color: Colors.white, // Text color
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else {
+                      quantity -= 1;
+                    }
+                  });
                 },
                 child: AppIcon(
                     iconColor: Colors.white,
@@ -187,13 +230,42 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                     icon: Icons.remove),
               ),
               BigText(
-                size: Dimensions.font26,
-                text: "12.88 " + "x" + " ${quantity}",
+                size: font26,
+                text: "${widget.item.price}" + "x" + " ${quantity}",
                 color: Colors.orange,
               ),
               GestureDetector(
                 onTap: () {
-                  increment();
+                  setState(() {
+                    print(quantity);
+                    if (quantity >= widget.item.qtyLeft.toInt()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                                // Icon color
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Maximum quantity reached!',
+                                style: TextStyle(
+                                  color: Colors.white, // Text color
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    } else {
+                      quantity += 1;
+                    }
+                  });
                 },
                 child: AppIcon(
                     iconColor: Colors.white,
@@ -204,29 +276,27 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
           ),
         ),
         Container(
-          height: Dimensions.bottomHeightBar,
+          height: bottomHeightBar,
           padding: EdgeInsets.only(
-              top: Dimensions.height10,
-              bottom: Dimensions.height10,
-              left: Dimensions.width30,
-              right: Dimensions.width30),
+              top: height10, bottom: height10, left: width30, right: width30),
           decoration: BoxDecoration(
               color: AppColors.buttonBackgroundColor,
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(Dimensions.radius20 * 2),
-                  topRight: Radius.circular(Dimensions.radius20 * 2))),
+                  topLeft: Radius.circular(radius20 * 2),
+                  topRight: Radius.circular(radius20 * 2))),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             GestureDetector(
-              onTap: () {
-                addToCart();
+              onTap: () async {
+                await addToCart();
+                print("written");
                 // controller.addItem();
               },
               child: Container(
                 padding: EdgeInsets.only(
-                  top: Dimensions.height20,
-                  bottom: Dimensions.height20,
-                  left: Dimensions.width30,
-                  right: Dimensions.width30,
+                  top: height20,
+                  bottom: height20,
+                  left: width30,
+                  right: width30,
                 ),
                 child: Row(
                   children: [
@@ -241,7 +311,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                   ],
                 ),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Dimensions.radius20),
+                  borderRadius: BorderRadius.circular(radius20),
                   color: Colors.orange,
                 ),
               ),

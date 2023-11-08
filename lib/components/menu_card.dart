@@ -12,6 +12,8 @@ class MenuCategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print("items");
+    // print(items);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,16 +43,17 @@ class MenuCard extends StatelessWidget {
   }) : super(key: key);
 
   final String image, title;
-  final double price;
+  final int price;
 
   @override
   Widget build(BuildContext context) {
+    // print("image);
     return Row(
       children: [
         SizedBox(
           width: 100,
           height: 100,
-          child: Image.asset(image),
+          child: Image.network("https://maleda-backend.onrender.com/$image"),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -93,7 +96,7 @@ class MenuCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      "\$${price}",
+                      "\$$price",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,

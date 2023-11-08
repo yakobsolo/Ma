@@ -1,5 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:get/get.dart';
+
+import 'package:foodly/bloc/product_bloc/product_bloc_bloc.dart';
 import 'package:foodly/components/menu_card.dart';
 import 'package:foodly/components/restaruant_categories.dart';
 import 'package:foodly/components/restaurant_info.dart';
@@ -7,12 +12,16 @@ import 'package:foodly/models/menu.dart';
 import 'package:foodly/pages/detailsPage.dart';
 import 'package:foodly/pages/drawer.dart';
 import 'package:foodly/routes/routed.dart';
-import 'package:get/get.dart';
 
 import 'components/restuarant_app_bar.dart';
 
 class RestaurantPage extends StatefulWidget {
-  const RestaurantPage({Key? key}) : super(key: key);
+  final List<CategoryMenu> demoCategoryMenus;
+
+  const RestaurantPage({
+    Key? key,
+    required this.demoCategoryMenus,
+  }) : super(key: key);
 
   @override
   State<RestaurantPage> createState() => _RestaurantPageState();
@@ -25,6 +34,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
   double restaruantInfoHeight = 200 + 170 - kToolbarHeight;
   @override
   void initState() {
+    // print("here")
     createdBreakPoints();
     scrollController.addListener(() {
       updateCategoryIndexOnScroll(scrollController.offset);
@@ -35,7 +45,6 @@ class _RestaurantPageState extends State<RestaurantPage> {
   @override
   void dispose() {
     scrollController.dispose();
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -44,7 +53,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
       int totalItems = 0;
 
       for (var i = 0; i < index; i++) {
-        totalItems += demoCategoryMenus[i].items.length;
+        totalItems += widget.demoCategoryMenus[i].items.length;
       }
       scrollController.animateTo(
           restaruantInfoHeight + (116 * totalItems) + (50 * index),
@@ -59,21 +68,26 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   List<double> breackPoints = [];
   void createdBreakPoints() {
-    double firstBreackPoint =
-        restaruantInfoHeight + 50 + (116 * demoCategoryMenus[0].items.length);
-    breackPoints.add(firstBreackPoint);
+    double firstBreackPoint = 0;
+    if (widget.demoCategoryMenus.length > 1) {
+      firstBreackPoint = restaruantInfoHeight +
+          50 +
+          (116 * widget.demoCategoryMenus[0].items.length);
+      breackPoints.add(firstBreackPoint);
+    }
 
-    for (var i = 1; i < demoCategoryMenus.length; i++) {
-      double firstBreackPoint =
-          restaruantInfoHeight + 50 + (116 * demoCategoryMenus[0].items.length);
+    for (var i = 1; i < widget.demoCategoryMenus.length; i++) {
+      double firstBreackPoint = restaruantInfoHeight +
+          50 +
+          (116 * widget.demoCategoryMenus[0].items.length);
       breackPoints.add(firstBreackPoint);
     }
   }
 
   void updateCategoryIndexOnScroll(double offset) {
-    for (var i = 0; i < demoCategoryMenus.length; i++) {
+    for (var i = 0; i < widget.demoCategoryMenus.length; i++) {
       if (i == 0) {
-        if ((offset < breackPoints.first) & (selectedCategoryIndex != 0)) {
+        if ((offset < breackPoints.first) && (selectedCategoryIndex != 0)) {
           setState(() {
             selectedCategoryIndex = 0;
           });
@@ -96,6 +110,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
           RestaurantAppBAr(),
           SliverPersistentHeader(
             delegate: RestaurantCategories(
+                demoCategoryMenus: widget.demoCategoryMenus,
                 onChanged: scrollToCategory,
                 selectedIndex: selectedCategoryIndex),
             pinned: true,
@@ -107,18 +122,25 @@ class _RestaurantPageState extends State<RestaurantPage> {
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  List<Menu> items = demoCategoryMenus[index].items;
+                  List<Menu> items = widget.demoCategoryMenus[index].items;
                   return MenuCategoryItem(
-                      title: demoCategoryMenus[index].category,
+                      title: widget.demoCategoryMenus[index].category,
                       items: List.generate(
                           items.length,
                           (idx) => Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: GestureDetector(
                                   onTap: () {
+                                    // print("item");
                                     // print(items[idx]);
-                                    Get.toNamed(RouteHelper.foodDetail,
-                                        arguments: 0);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            RecommendFoodDetail(
+                                          item: items[idx],
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: MenuCard(
                                       image: items[idx].image,
@@ -127,7 +149,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                                 ),
                               )));
                 },
-                childCount: demoCategoryMenus.length,
+                childCount: widget.demoCategoryMenus.length,
               ),
             ),
           ),

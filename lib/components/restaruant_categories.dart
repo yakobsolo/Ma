@@ -4,18 +4,25 @@ import '../models/menu.dart';
 
 class RestaurantCategories extends SliverPersistentHeaderDelegate {
   final ValueChanged<int> onChanged;
+  final List<CategoryMenu> demoCategoryMenus;
 
   final int selectedIndex;
 
-  RestaurantCategories({required this.onChanged, required this.selectedIndex});
-
+  RestaurantCategories(
+      {required this.onChanged,
+      required this.demoCategoryMenus,
+      required this.selectedIndex});
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
         color: Colors.white,
         height: 52,
-        child: Categories(onChanged: onChanged, selectedIndex: selectedIndex));
+        child: Categories(
+          onChanged: onChanged,
+          selectedIndex: selectedIndex,
+          demoCategoryMenus: demoCategoryMenus,
+        ));
   }
 
   @override
@@ -37,17 +44,19 @@ class Categories extends StatefulWidget {
     Key? key,
     required this.onChanged,
     required this.selectedIndex,
+    required this.demoCategoryMenus,
   }) : super(key: key);
 
   final ValueChanged<int> onChanged;
   final int selectedIndex;
+  final List<CategoryMenu> demoCategoryMenus;
 
   @override
   State<Categories> createState() => _CategoriesState();
 }
 
 class _CategoriesState extends State<Categories> {
-  // int selectedIndex = 0;
+  int selectedIndex = 0;
   late ScrollController _controller;
   @override
   void initState() {
@@ -64,7 +73,7 @@ class _CategoriesState extends State<Categories> {
   @override
   void didUpdateWidget(covariant Categories oldWidget) {
     _controller.animateTo(
-      80.0 * widget.selectedIndex,
+      80.0 * selectedIndex,
       curve: Curves.ease,
       duration: const Duration(milliseconds: 200),
     );
@@ -78,7 +87,7 @@ class _CategoriesState extends State<Categories> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: List.generate(
-          demoCategoryMenus.length,
+          widget.demoCategoryMenus.length,
           (index) => Padding(
             padding: const EdgeInsets.only(left: 8),
             child: TextButton(
@@ -96,7 +105,7 @@ class _CategoriesState extends State<Categories> {
                     : Colors.orange,
               ),
               child: Text(
-                demoCategoryMenus[index].category,
+                widget.demoCategoryMenus[index].category,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

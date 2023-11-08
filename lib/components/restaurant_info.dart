@@ -111,7 +111,7 @@ class RestaurantInfo extends StatelessWidget {
                     ),
                   ),
                   child: GestureDetector(
-                      onTap: () => Get.toNamed(RouteHelper.getCart()),
+                      onTap: () {},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
