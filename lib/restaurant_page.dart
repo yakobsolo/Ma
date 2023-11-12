@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:get/get.dart';
 
@@ -30,6 +33,7 @@ class RestaurantPage extends StatefulWidget {
 class _RestaurantPageState extends State<RestaurantPage> {
   final scrollController = ScrollController();
   int selectedCategoryIndex = 0;
+  static FlutterSecureStorage storage = FlutterSecureStorage();
 
   double restaruantInfoHeight = 200 + 170 - kToolbarHeight;
   @override
@@ -130,14 +134,27 @@ class _RestaurantPageState extends State<RestaurantPage> {
                           (idx) => Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: GestureDetector(
-                                  onTap: () {
-                                    // print("item");
-                                    // print(items[idx]);
+                                  onTap: () async {
+                                    int qty = 1;
+                                    final jsonString =
+                                        await storage.read(key: "carts");
+                                    if (jsonString != null) {
+                                      final jsonData = json.decode(jsonString);
+
+                                      for (var data in jsonData) {
+                                        if (data["title"] == items[idx].title) {
+                                          int cnt = data['quantity'];
+                                          qty += cnt;
+                                        }
+                                      }
+                                    }
+
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             RecommendFoodDetail(
                                           item: items[idx],
+                                          qty: qty,
                                         ),
                                       ),
                                     );

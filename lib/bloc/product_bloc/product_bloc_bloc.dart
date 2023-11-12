@@ -29,9 +29,9 @@ class ProductBlocBloc extends Bloc<ProductBlocEvent, ProductBlocState> {
           final newProduct = Product(
             productName: p['productName'] as String,
             description: "Description",
-            qtyLeft: p['qtyLeft'] as int,
+            qtyLeft: p['qtyLeft'].toInt(),
             imgSrc: p['imgPath'][0] as String,
-            price: p["price"] as int,
+            price: p["price"].toInt(),
             id: p["_id"] as String,
             category: p['productCategory']["title"] as String,
           );
@@ -55,6 +55,7 @@ class ProductBlocBloc extends Bloc<ProductBlocEvent, ProductBlocState> {
           List<Menu> item = [];
           for (var data in pr) {
             var menu = Menu(
+                id: data.id is String ? data.id : "",
                 title: data.productName is String ? data.productName : "",
                 description: "This is test Description",
                 image: data.imgSrc is String ? data.imgSrc : "",

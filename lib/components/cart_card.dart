@@ -11,6 +11,8 @@ class CartCard extends StatefulWidget {
   final int amount;
   final int qtyLeft;
   final updateTotal;
+  final subTotal;
+  final description;
 
   CartCard({
     Key? key,
@@ -21,6 +23,8 @@ class CartCard extends StatefulWidget {
     required this.instructions,
     required this.qtyLeft,
     this.updateTotal,
+    this.subTotal,
+    this.description,
   }) : super(key: key);
 
   @override
@@ -118,7 +122,24 @@ class _CartCardState extends State<CartCard> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            if (quantity < widget.qtyLeft) {
+                            int before = 0;
+                            final jsonString = await storage.read(key: "carts");
+                            if (jsonString != null) {
+                              final jsonData = json.decode(jsonString);
+                              // print(jsonData);
+                              for (int i = 0; i < jsonData.length; ++i) {
+                                if (jsonData[i]['title'] == widget.title) {
+                                  int cnt = jsonData[i]["quantity"];
+                                  before += cnt;
+                                }
+                              }
+                            }
+                            // print("hahahahaha");
+                            // print(quantity + before);
+                            // print(quantity);
+                            // print(before);
+
+                            if (before < widget.qtyLeft) {
                               setState(() {
                                 quantity += 1;
                                 widget.updateTotal(widget.price);
@@ -129,8 +150,12 @@ class _CartCardState extends State<CartCard> {
                                 final jsonData = json.decode(jsonString);
                                 var newJsonData = [];
                                 for (var value in jsonData) {
-                                  if (value['title'] == widget.title) {
-                                    value['quantitiy'] = quantity;
+                                  if (value['title'] == widget.title &&
+                                      value['instruction'] ==
+                                          widget.instructions) {
+                                    value['quantity'] = quantity;
+                                    value['subTotal'] =
+                                        (quantity * value['price']);
                                   }
                                   newJsonData.add(value);
                                 }
@@ -140,7 +165,7 @@ class _CartCardState extends State<CartCard> {
                               }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
+                                const SnackBar(
                                   backgroundColor: Colors.red,
                                   content: Row(
                                     children: <Widget>[
@@ -191,8 +216,12 @@ class _CartCardState extends State<CartCard> {
                                 final jsonData = json.decode(jsonString);
                                 var newJsonData = [];
                                 for (var value in jsonData) {
-                                  if (value['title'] == widget.title) {
-                                    value['quantitiy'] = quantity;
+                                  if (value['title'] == widget.title &&
+                                      value['instruction'] ==
+                                          widget.instructions) {
+                                    value['quantity'] = quantity;
+                                    value['subtotal'] =
+                                        (quantity * value['price']);
                                   }
                                   newJsonData.add(value);
                                 }

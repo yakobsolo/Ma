@@ -1,12 +1,14 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:maleda/models/menu.dart';
-import 'package:maleda/widgets/small_text.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
+import 'package:maleda/models/menu.dart';
+import 'package:maleda/widgets/small_text.dart';
 
 import '../models/shop.dart';
 import '../routes/routed.dart';
@@ -16,37 +18,77 @@ import '../widgets/big_text.dart';
 
 class RecommendFoodDetail extends StatefulWidget {
   final Menu item;
+  final int qty;
 
-  const RecommendFoodDetail({required this.item, super.key});
+  const RecommendFoodDetail({
+    Key? key,
+    required this.item,
+    required this.qty,
+  }) : super(key: key);
 
   @override
   State<RecommendFoodDetail> createState() => _RecommendFoodDetailState();
 }
 
 class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
-  int quantity = 1;
+  late int quantity = widget.qty;
   static FlutterSecureStorage storage = const FlutterSecureStorage();
+  late TextEditingController instruction;
+  String? orderInstruction = "";
+  bool found = false;
+
+  @override
+  void initState() {
+    super.initState();
+    instruction = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    instruction.dispose();
+    super.dispose();
+  }
+
+  Future<String?> openDiag() => showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text(
+            "Enter you instruction",
+            style: TextStyle(color: Colors.orange),
+          ),
+          content: TextField(
+            controller: instruction,
+            decoration:
+                const InputDecoration(hintText: "Enter your instruction here"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(instruction.text);
+              },
+              child: const Text("Submit"),
+            )
+          ],
+        ),
+      );
 
   Future<void> addToCart() async {
-    // print(widget.item);
-    var new_menu = {
-      "title": widget.item.title,
-      "description": widget.item.description,
-      "image": widget.item.image,
-      "price": widget.item.price,
-      "qtyLeft": widget.item.qtyLeft,
-      "itemPrice": (widget.item.price * quantity),
-      "quantitiy": quantity,
-    };
-    if (quantity > 0) {
-      var jsonData = await storage.read(key: 'carts');
+    String? desc = await openDiag();
+    setState(() {
+      orderInstruction = desc;
+    });
 
-      if (jsonData != null) {
-        var jsonList = json.decode(jsonData);
-        for (var value in jsonList) {
-          if (new_menu['title'] == value['title']) {
+    final jsonString = await storage.read(key: 'carts');
+    if (jsonString != null) {
+      final jsonData = json.decode(jsonString);
+      // print(quantity);
+      for (int i = 0; i < jsonData.length; ++i) {
+        if (jsonData[i]['title'] == widget.item.title &&
+            jsonData[i]['instruction'] == orderInstruction) {
+          if (jsonData[i]['quantity'] + quantity > widget.item.qtyLeft) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 backgroundColor: Colors.red,
                 content: Row(
                   children: <Widget>[
@@ -57,7 +99,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      'Already Added to cart!',
+                      "Maximum reached for this product",
                       style: TextStyle(
                         color: Colors.white, // Text color
                         fontSize: 14,
@@ -70,17 +112,131 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             );
             return;
           }
+
+          int before = 0;
+
+          for (int i = 0; i < jsonData.length; ++i) {
+            if (jsonData[i]['title'] == widget.item.title) {
+              int cnt = jsonData[i]["quantity"];
+              before += cnt;
+            }
+          }
+
+          if (before + quantity > widget.item.qtyLeft) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: Colors.red,
+                content: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.white,
+                      // Icon color
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Maximum reached for this product",
+                      style: TextStyle(
+                        color: Colors.white, // Text color
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                duration: Duration(seconds: 3),
+              ),
+            );
+            return;
+          }
+
+          jsonData[i]['quantity'] = jsonData[i]['quantity'] + quantity;
+          jsonData[i]['subTotal'] += jsonData[i]['price'];
+          final insertedData = json.encode(jsonData);
+          await storage.write(key: "carts", value: insertedData);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.check_circle,
+                    color: Colors.white,
+                    // Icon color
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Cart Added Successfully',
+                    style: TextStyle(
+                      color: Colors.white, // Text color
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          return;
         }
-        jsonList.add(new_menu);
-        final jsonString = json.encode(jsonList);
-        await storage.write(key: 'carts', value: jsonString);
-      } else {
-        final jsonList = [new_menu];
-        final jsonString = json.encode(jsonList);
-        await storage.write(key: "carts", value: jsonString);
       }
+
+      int before = 0;
+
+      for (int i = 0; i < jsonData.length; ++i) {
+        if (jsonData[i]['title'] == widget.item.title) {
+          int cnt = jsonData[i]["quantity"];
+          before += cnt;
+        }
+      }
+
+      if (before + quantity > widget.item.qtyLeft) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.white,
+                  // Icon color
+                ),
+                SizedBox(width: 10),
+                Text(
+                  "Maximum reached for this product",
+                  style: TextStyle(
+                    color: Colors.white, // Text color
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+      final newMenu = {
+        "id": widget.item.id,
+        "title": widget.item.title,
+        "description": widget.item.description,
+        "image": widget.item.image,
+        "quantity": quantity,
+        "qtyLeft": widget.item.qtyLeft,
+        "price": widget.item.price,
+        "instruction": orderInstruction,
+        "subTotal": (quantity * widget.item.price)
+      };
+      // print(newMenu);
+      jsonData.add(newMenu);
+      final insertedData = json.encode(jsonData);
+      await storage.write(key: "carts", value: insertedData);
+      // setState(() {
+      //   quantity = 1;
+      // });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.green,
           content: Row(
             children: <Widget>[
@@ -91,7 +247,47 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               ),
               SizedBox(width: 10),
               Text(
-                'Added to cart!',
+                'Cart Added Successfully',
+                style: TextStyle(
+                  color: Colors.white, // Text color
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } else {
+      List jsonData = [];
+      final newMenu = {
+        "id": widget.item.id,
+        "title": widget.item.title,
+        "description": widget.item.description,
+        "image": widget.item.image,
+        "quantity": quantity,
+        "qtyLeft": widget.item.qtyLeft,
+        "price": widget.item.price,
+        "instruction": orderInstruction,
+        "subTotal": (quantity * widget.item.price)
+      };
+
+      jsonData.add(newMenu);
+      final insertedData = json.encode(jsonData);
+      await storage.write(key: "carts", value: insertedData);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Row(
+            children: <Widget>[
+              Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                // Icon color
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Cart Added Successfully!',
                 style: TextStyle(
                   color: Colors.white, // Text color
                   fontSize: 14,
@@ -107,10 +303,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.item.qtyLeft < 1) {
-      quantity = 0;
-    }
-    final longtext =
+    const longtext =
         "Galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
 
     double screenHeight = MediaQuery.of(context).size.height;
@@ -160,7 +353,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             child: Container(
               child: Center(
                 child: Text(
-                  widget.item.title,
+                  "${widget.item.title}",
                   style: TextStyle(
                     fontSize: 22,
                     color: Colors.orange,
@@ -224,16 +417,15 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    if (quantity < 1) {
+                    if (quantity <= 1) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           backgroundColor: Colors.red,
                           content: Row(
                             children: <Widget>[
                               Icon(
                                 Icons.check_circle,
                                 color: Colors.white,
-                                // Icon color
                               ),
                               SizedBox(width: 10),
                               Text(
@@ -266,10 +458,9 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    print(quantity);
-                    if (quantity >= widget.item.qtyLeft.toInt()) {
+                    if (quantity >= widget.item.qtyLeft) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           backgroundColor: Colors.red,
                           content: Row(
                             children: <Widget>[

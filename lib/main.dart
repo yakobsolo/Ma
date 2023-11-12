@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 void main() {
+  
   runApp(
     ChangeNotifierProvider(
       create: (context) => Shop(),
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
               },
             );
           }
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         },

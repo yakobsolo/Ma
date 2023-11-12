@@ -9,10 +9,10 @@ import 'package:maleda/widgets/app_icon.dart';
 import 'package:get/get.dart';
 
 class RestaurantAppBAr extends StatelessWidget {
-  const RestaurantAppBAr({
+  RestaurantAppBAr({
     super.key,
   });
-
+  int total = 0;
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -38,23 +38,30 @@ class RestaurantAppBAr extends StatelessWidget {
           onTap: () async {
             FlutterSecureStorage storage = const FlutterSecureStorage();
             var value = [];
+            total = 0;
             var jsonString = await storage.read(key: "carts");
 
             if (jsonString != null) {
               var jsonDecoded = json.decode(jsonString);
+
               value = jsonDecoded;
+              print("app");
+              print(jsonDecoded);
+              for (var data in jsonDecoded) {
+                int sub = data['subTotal'];
+                total += sub;
+              }
+              print(total);
             }
 
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => CartPage(
-                  carts: value,
-                ),
+                builder: (context) => CartPage(carts: value, total: total),
               ),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Icon(
               Icons.shopping_cart,
               color: Colors.white,
