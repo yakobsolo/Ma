@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:maleda/components/restaruant_categories.dart';
 import 'package:maleda/models/Product.dart';
 import 'package:maleda/models/menu.dart';
@@ -70,7 +71,15 @@ class ProductBlocBloc extends Bloc<ProductBlocEvent, ProductBlocState> {
           items.add(categoryMenu);
         }
 
-        emit(ProductIsLoaded(demoCategoryMenus: items));
+        FlutterSecureStorage storage = const FlutterSecureStorage();
+
+        final jsonString = storage.read(key: "onboarding");
+
+        if (jsonString != null) {
+          emit(ProductIsLoaded(demoCategoryMenus: items));
+        } else {
+          emit(Onboarding());
+        }
       },
     );
   }

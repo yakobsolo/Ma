@@ -45,13 +45,12 @@ class RestaurantAppBAr extends StatelessWidget {
               var jsonDecoded = json.decode(jsonString);
 
               value = jsonDecoded;
-              print("app");
-              print(jsonDecoded);
+            
               for (var data in jsonDecoded) {
                 int sub = data['subTotal'];
                 total += sub;
               }
-              print(total);
+             
             }
 
             Navigator.of(context).push(

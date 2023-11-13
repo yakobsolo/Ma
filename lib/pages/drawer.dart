@@ -1,4 +1,8 @@
+import "dart:convert";
+
 import "package:flutter/material.dart";
+import "package:flutter_secure_storage/flutter_secure_storage.dart";
+import "package:maleda/pages/cartPage.dart";
 import "package:maleda/uttils/Dimensions.dart";
 import "package:maleda/uttils/colors.dart";
 import "package:maleda/widgets/big_text.dart";
@@ -12,6 +16,7 @@ class DrawerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int total = 0;
     return Drawer(
       // backgroundColor: Colors.orange,
       child: ListView(
@@ -25,13 +30,13 @@ class DrawerPage extends StatelessWidget {
                 child: Image.asset("assets/images/f_0.png"),
               ),
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.orange,
               // image: DecorationImage(image: AssetImage("assets/images/f_2.png"),fit: BoxFit.cover)
             ),
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               Icons.home,
               color: Colors.orange,
             ),
@@ -43,13 +48,11 @@ class DrawerPage extends StatelessWidget {
               ),
             ),
             onTap: () {
-              // Get.toNamed(
-              //   RouteHelper.getCart(),
-              // );
+              Navigator.of(context).pushNamed("/");
             },
           ),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               Icons.shopping_cart,
               color: Colors.orange,
               size: 20,
@@ -58,7 +61,31 @@ class DrawerPage extends StatelessWidget {
               "Cart",
               style: TextStyle(fontSize: 15, color: Colors.orange),
             ),
-            onTap: () {},
+            onTap: () async {
+              FlutterSecureStorage storage = const FlutterSecureStorage();
+              var value = [];
+              total = 0;
+              var jsonString = await storage.read(key: "carts");
+
+              if (jsonString != null) {
+                var jsonDecoded = json.decode(jsonString);
+
+                value = jsonDecoded;
+                print("app");
+                print(jsonDecoded);
+                for (var data in jsonDecoded) {
+                  int sub = data['subTotal'];
+                  total += sub;
+                }
+                print(total);
+              }
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CartPage(carts: value, total: total),
+                ),
+              );
+            },
           ),
         ],
       ),

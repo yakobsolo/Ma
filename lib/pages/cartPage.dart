@@ -416,7 +416,7 @@ class _CartPageState extends State<CartPage> {
                                   final newresponse =
                                       json.decode(response.body);
                                   print(newresponse);
-                                  await storage.deleteAll();
+                                  await storage.delete(key: "carts");
                                 },
                                 onError: (error) {
                                   print("onError: $error");

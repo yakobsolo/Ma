@@ -5,6 +5,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:maleda/pages/cartPage.dart';
 import 'package:provider/provider.dart';
 
 import 'package:maleda/models/menu.dart';
@@ -320,6 +321,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
 
     double bottomHeightBar = screenHeight / 7.03;
 
+    int total = 0;
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(slivers: [
@@ -330,7 +332,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             children: [
               GestureDetector(
                   onTap: () {
-                    // Get.toNamed(RouteHelper.getInitial());
+                    Navigator.of(context).pop();
                   },
                   child: AppIcon(
                     icon: Icons.clear,
@@ -338,8 +340,29 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                     backgroundColor: Colors.orange,
                   )),
               GestureDetector(
-                  onTap: () {
-                    // Get.toNamed(RouteHelper.getCart());
+                  onTap: () async {
+                    FlutterSecureStorage storage = const FlutterSecureStorage();
+                    var value = [];
+                    total = 0;
+                    var jsonString = await storage.read(key: "carts");
+
+                    if (jsonString != null) {
+                      var jsonDecoded = json.decode(jsonString);
+
+                      value = jsonDecoded;
+
+                      for (var data in jsonDecoded) {
+                        int sub = data['subTotal'];
+                        total += sub;
+                      }
+                    }
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CartPage(carts: value, total: total),
+                      ),
+                    );
                   },
                   child: AppIcon(
                     icon: Icons.shopping_cart_outlined,
@@ -349,7 +372,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             ],
           ),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(40),
+            preferredSize: const Size.fromHeight(40),
             child: Container(
               child: Center(
                 child: Text(

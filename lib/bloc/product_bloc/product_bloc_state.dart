@@ -13,3 +13,5 @@ final class ProductIsLoaded extends ProductBlocState {
 
   List<Object?> get props => [demoCategoryMenus];
 }
+
+final class Onboarding extends ProductBlocState {}
