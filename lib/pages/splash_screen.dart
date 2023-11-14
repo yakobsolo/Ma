@@ -71,7 +71,7 @@ class SplashScreen extends StatelessWidget {
               ),
               nextScreen: OnboardingPage(),
               splashTransition: SplashTransition.slideTransition,
-              duration: 10000,
+              duration: 7000,
             ),
           ),
           Container(

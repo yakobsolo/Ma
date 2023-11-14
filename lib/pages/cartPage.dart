@@ -146,7 +146,6 @@ class _CartPageState extends State<CartPage> {
                         // This is called when the user selects an item.
                         setState(() {
                           dropdownValue = value!;
-                          print(dropdownValue);
                         });
                       }),
                 ],
@@ -160,6 +159,7 @@ class _CartPageState extends State<CartPage> {
                     "email": email.text,
                     "phoneNumber": phoneNumber.text,
                     "pickUpTime": dropdownValue,
+                    
                   });
                 },
                 child: const Text("Submit"),
