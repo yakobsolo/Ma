@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
 
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              initialRoute: '/splash',
+              initialRoute: showHome ?'/' : '/splash',
               routes: {
                 "/": (context) => RestaurantPage(
                       demoCategoryMenus: product,

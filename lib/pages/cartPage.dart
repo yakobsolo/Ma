@@ -323,7 +323,7 @@ class _CartPageState extends State<CartPage> {
 
                       if (userData['name'] != null &&
                           userData['email'] != null &&
-                          userData['phone'] != null &&
+                          userData['phoneNumber'] != null &&
                           userData['name'] != "" &&
                           userData['email'] != "" &&
                           userData['phoneNumber'] != "") {

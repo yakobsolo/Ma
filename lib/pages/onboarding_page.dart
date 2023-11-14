@@ -136,9 +136,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_currindex == 2) {
-            Navigator.of(context).pushNamed('/'); // chage it with bloc
             final pref = await SharedPreferences.getInstance();
             pref.setBool('showHome', true);
+            Navigator.of(context).pushNamed('/'); // chage it with bloc
+            
           } else {
             pageController.nextPage(
                 duration: Duration(milliseconds: 300), curve: Curves.linear);
@@ -148,7 +149,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           CupertinoIcons.chevron_right,
           color: Colors.white,
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
       ),
     );
   }
