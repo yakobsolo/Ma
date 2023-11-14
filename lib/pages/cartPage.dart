@@ -146,6 +146,7 @@ class _CartPageState extends State<CartPage> {
                         // This is called when the user selects an item.
                         setState(() {
                           dropdownValue = value!;
+                          print(dropdownValue);
                         });
                       }),
                 ],
