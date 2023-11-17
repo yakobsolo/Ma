@@ -127,82 +127,87 @@ class _CartPageState extends State<CartPage> {
   }
 
   Future<dynamic> openDiag() => showDialog<dynamic>(
-        context: context,
-        builder: (context) => SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: AlertDialog(
-            title: const Text(
-              "Enter Your Contact Information",
-              style: TextStyle(
-                color: Colors.orange,
-                fontSize: 15,
-              ),
-            ),
-            content: SizedBox(
-              height: MediaQuery.of(context).size.height / 3,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: name,
-                    decoration:
-                        const InputDecoration(hintText: "Enter Your Name"),
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: AlertDialog(
+                title: const Text(
+                  "Enter Your Contact Information",
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 15,
                   ),
-                  TextField(
-                    controller: email,
-                    decoration:
-                        const InputDecoration(hintText: "Enter your Email"),
-                  ),
-                  TextField(
-                    controller: phoneNumber,
-                    decoration:
-                        const InputDecoration(hintText: "Phone Number Here"),
-                  ),
-                  // Text(
-                  //   "Pick up Time",
-                  // ),
-                  DropdownButton(
-                      underline: Container(
-                        height: 2,
-                        color: Colors.deepPurpleAccent,
+                ),
+                content: SizedBox(
+                  height: MediaQuery.of(context).size.height / 3,
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: name,
+                        decoration:
+                            const InputDecoration(hintText: "Enter Your Name"),
                       ),
-                      value: dropdownValue,
-                      icon: const Icon(Icons.arrow_downward),
-                      style: const TextStyle(color: Colors.orange),
-                      items: timeSlots
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? value) {
-                        // This is called when the user selects an item.
-                        setState(() {
-                          dropdownValue = value!;
-                        });
-                      }),
+                      TextField(
+                        controller: email,
+                        decoration:
+                            const InputDecoration(hintText: "Enter your Email"),
+                      ),
+                      TextField(
+                        controller: phoneNumber,
+                        decoration:
+                            const InputDecoration(hintText: "Phone Number Here"),
+                      ),
+                      // Text(
+                      //   "Pick up Time",
+                      // ),
+                      DropdownButton(
+                          underline: Container(
+                            height: 2,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                          value: dropdownValue,
+                          icon: const Icon(Icons.arrow_downward),
+                          style: const TextStyle(color: Colors.orange),
+                          items: timeSlots
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? value) {
+                            // This is called when the user selects an item.
+                            setState(() {
+                              dropdownValue = value!;
+                            });
+                          }),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop({
+                        "name": name.text,
+                        "email": email.text,
+                        "phoneNumber": phoneNumber.text,
+                        "pickUpTime": dropdownValue,
+                      });
+                    },
+                    child: const Text("Submit"),
+                  )
                 ],
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop({
-                    "name": name.text,
-                    "email": email.text,
-                    "phoneNumber": phoneNumber.text,
-                    "pickUpTime": dropdownValue,
-                  });
-                },
-                child: const Text("Submit"),
-              )
-            ],
-          ),
-        ),
-      );
+            );
+          }
+        );
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +294,8 @@ class _CartPageState extends State<CartPage> {
                       amount: items[idx]['quantity'],
                       description: items[idx]['description'],
                       subTotal: items[idx]['subTotal'],
-                      instructions: items[idx]['instruction'] ?? "No instrctions",
+                      instructions:
+                          items[idx]['instruction'] ?? "No instrctions",
                       qtyLeft: items[idx]['qtyLeft'],
                       updateTotal: updateTotalPrice,
                       indx: idx,
