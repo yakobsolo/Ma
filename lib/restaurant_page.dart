@@ -106,71 +106,78 @@ class _RestaurantPageState extends State<RestaurantPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: DrawerPage(),
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          RestaurantAppBAr(),
-          SliverPersistentHeader(
-            delegate: RestaurantCategories(
-                demoCategoryMenus: widget.demoCategoryMenus,
-                onChanged: scrollToCategory,
-                selectedIndex: selectedCategoryIndex),
-            pinned: true,
-          ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 16,
+    return WillPopScope(
+      onWillPop: () async {
+        return await false;
+      },
+      child: Scaffold(
+        drawer: DrawerPage(),
+        body: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            RestaurantAppBAr(),
+            SliverPersistentHeader(
+              delegate: RestaurantCategories(
+                  demoCategoryMenus: widget.demoCategoryMenus,
+                  onChanged: scrollToCategory,
+                  selectedIndex: selectedCategoryIndex),
+              pinned: true,
             ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  List<Menu> items = widget.demoCategoryMenus[index].items;
-                  return MenuCategoryItem(
-                      title: widget.demoCategoryMenus[index].category,
-                      items: List.generate(
-                          items.length,
-                          (idx) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    int qty = 1;
-                                    final jsonString =
-                                        await storage.read(key: "carts");
-                                    if (jsonString != null) {
-                                      final jsonData = json.decode(jsonString);
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    List<Menu> items = widget.demoCategoryMenus[index].items;
+                    return MenuCategoryItem(
+                        title: widget.demoCategoryMenus[index].category,
+                        items: List.generate(
+                            items.length,
+                            (idx) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      int qty = 0;
+                                      final jsonString =
+                                          await storage.read(key: "carts");
+                                      if (jsonString != null) {
+                                        final jsonData =
+                                            json.decode(jsonString);
 
-                                      for (var data in jsonData) {
-                                        if (data["title"] == items[idx].title) {
-                                          int cnt = data['quantity'];
-                                          qty += cnt;
+                                        for (var data in jsonData) {
+                                          if (data["title"] ==
+                                              items[idx].title) {
+                                            int cnt = data['quantity'];
+                                            qty += cnt;
+                                          }
                                         }
                                       }
-                                    }
 
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            RecommendFoodDetail(
-                                          item: items[idx],
-                                          qty: qty,
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RecommendFoodDetail(
+                                            item: items[idx],
+                                            qty: qty,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  child: MenuCard(
-                                      image: items[idx].image,
-                                      title: items[idx].title,
-                                      price: items[idx].price),
-                                ),
-                              )));
-                },
-                childCount: widget.demoCategoryMenus.length,
+                                      );
+                                    },
+                                    child: MenuCard(
+                                        image: items[idx].image,
+                                        title: items[idx].title,
+                                        price: items[idx].price),
+                                  ),
+                                )));
+                  },
+                  childCount: widget.demoCategoryMenus.length,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

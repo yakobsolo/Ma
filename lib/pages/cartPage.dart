@@ -35,6 +35,36 @@ class _CartPageState extends State<CartPage> {
 
   late String dropdownValue;
 
+  Future<void> deleteItemFromCart(
+      int subtotal, int indx, String title, String instruction) async {
+    final jsonString = await storage.read(key: 'carts');
+    if (jsonString != null) {
+      List<dynamic> jsonData = json.decode(jsonString);
+      bool temp;
+      int price = 0;
+      jsonData.removeWhere((item) {
+        temp = item['title'] == title && item['description'] == instruction;
+        if (temp) {
+          price = item['subTotal'];
+        }
+        // print(temp);
+        // print(item['title']);
+        return temp;
+      });
+
+      final updatedData = json.encode(jsonData);
+      await storage.write(key: 'carts', value: updatedData);
+      deleteCartItem(indx);
+      decreaseTotalPrice(price);
+    }
+  }
+
+  void deleteCartItem(int index) {
+    setState(() {
+      widget.carts.removeAt(index);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +117,12 @@ class _CartPageState extends State<CartPage> {
   updateTotalPrice(int price) {
     setState(() {
       totalPrice += price;
+    });
+  }
+
+  decreaseTotalPrice(int price) {
+    setState(() {
+      totalPrice -= price;
     });
   }
 
@@ -234,19 +270,29 @@ class _CartPageState extends State<CartPage> {
             child: ListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, idx) {
+                  print(items[idx]);
                   return Padding(
                     padding:
                         EdgeInsets.only(left: width30, right: width30, top: 16),
                     child: CartCard(
+                      onDelete: () {
+                        deleteItemFromCart(
+                          items[idx]['subTotal'],
+                          idx,
+                          items[idx]['title'],
+                          items[idx]['description'],
+                        );
+                      },
                       image: items[idx]['image'],
                       title: items[idx]['title'],
                       price: items[idx]['price'],
                       amount: items[idx]['quantity'],
                       description: items[idx]['description'],
                       subTotal: items[idx]['subTotal'],
-                      instructions: items[idx]['instruction'],
+                      instructions: items[idx]['instruction'] ?? "No instrctions",
                       qtyLeft: items[idx]['qtyLeft'],
                       updateTotal: updateTotalPrice,
+                      indx: idx,
                     ),
                   );
                 }),

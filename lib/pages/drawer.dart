@@ -27,7 +27,8 @@ class DrawerPage extends StatelessWidget {
             accountEmail: Text(""),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.asset("assets/images/f_0.png"),
+                
+                child: Image.asset("assets/images/f_0.png", fit: BoxFit.cover,),
               ),
             ),
             decoration: const BoxDecoration(

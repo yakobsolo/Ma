@@ -32,7 +32,7 @@ class RecommendFoodDetail extends StatefulWidget {
 }
 
 class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
-  late int quantity = widget.qty;
+  late int quantity = 1;
   static FlutterSecureStorage storage = const FlutterSecureStorage();
   late TextEditingController instruction;
   String? orderInstruction = "";
@@ -44,12 +44,12 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
     instruction = TextEditingController();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    instruction.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   instruction.dispose();
+  //   super.dispose();
+  // }
 
   Future<String?> openDiag() => showDialog<String>(
         context: context,
@@ -299,13 +299,14 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
           duration: Duration(seconds: 3),
         ),
       );
+      
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    const longtext =
-        "Galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
+    // const longtext =
+    //     "Galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
 
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
@@ -377,7 +378,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             child: Container(
               child: Center(
                 child: Text(
-                  "${widget.item.title}",
+                  widget.item.title,
                   style: TextStyle(
                     fontSize: 22,
                     color: Colors.orange,
@@ -403,6 +404,10 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
               "https://maleda-backend.onrender.com/${widget.item.image}",
               width: double.maxFinite,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Image.asset(
+                "assets/images/f_0.png",
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -413,7 +418,8 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                 padding: EdgeInsets.only(
                     top: height20, left: width30, right: width30),
                 child: ExpandableText(
-                  longtext,
+                  widget.item.description,
+                  textAlign: TextAlign.start,
                   style: TextStyle(
                     height: 2,
                     color: Colors.grey,
@@ -453,7 +459,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                               ),
                               SizedBox(width: 10),
                               Text(
-                                'Minimum quantity reached!',
+                                'you can\'t order 0',
                                 style: TextStyle(
                                   color: Colors.white, // Text color
                                   fontSize: 14,
@@ -480,11 +486,25 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                 color: Colors.orange,
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  FlutterSecureStorage storage = const FlutterSecureStorage();
+                  dynamic jsonData = null;
+                  total = 0;
+                  var jsonString = await storage.read(key: "carts");
+                  if (jsonString != null) {
+                    jsonData = await json.decode(jsonString);
+                  }
+                  num left = 0;
+                  for (int i = 0; i < jsonData.length; ++i) {
+                    if (jsonData[i]['title'] == widget.item.title) {
+                      left += jsonData[i]['quantity'];
+                    }
+                  }
+
                   setState(() {
-                    if (quantity >= widget.item.qtyLeft) {
+                    if (quantity >= widget.item.qtyLeft - left) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           backgroundColor: Colors.red,
                           content: Row(
                             children: <Widget>[
@@ -495,7 +515,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
                               ),
                               SizedBox(width: 10),
                               Text(
-                                'Maximum quantity reached!',
+                                'quantity left is only ${(widget.item.qtyLeft - left).toString()}',
                                 style: TextStyle(
                                   color: Colors.white, // Text color
                                   fontSize: 14,
@@ -532,7 +552,7 @@ class _RecommendFoodDetailState extends State<RecommendFoodDetail> {
             GestureDetector(
               onTap: () async {
                 await addToCart();
-                print("written");
+                // print("written");
                 // controller.addItem();
               },
               child: Container(

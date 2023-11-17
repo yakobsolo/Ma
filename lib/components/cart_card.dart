@@ -2,20 +2,25 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:maleda/uttils/Dimensions.dart';
 import 'package:maleda/widgets/big_text.dart';
 
 class CartCard extends StatefulWidget {
   final String image, title;
   final int price;
-  final String instructions;
+  String instructions;
   final int amount;
   final int qtyLeft;
   final updateTotal;
   final subTotal;
   final description;
+  final int indx;
+  final Function onDelete;
 
   CartCard({
     Key? key,
+    required this.onDelete,
+    required this.indx,
     required this.image,
     required this.title,
     required this.price,
@@ -37,6 +42,7 @@ class _CartCardState extends State<CartCard> {
 
   @override
   Widget build(BuildContext context) {
+    
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -75,13 +81,23 @@ class _CartCardState extends State<CartCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        SizedBox(
-          width: screenWidth / 4,
-          height: 100,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10.0), // Adjust the radius
           child: Image.network(
-              "https://maleda-backend.onrender.com/${widget.image}"),
+            'https://maleda-backend.onrender.com/${widget.image}',
+            errorBuilder: (context, error, stackTrace) => Image.asset(
+              "assets/images/f_0.png",
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ), // Adjust how the image fits within the bounds
+
+            width: screenWidth / 4, // Set width as needed
+            height: 100, // Set height as needed
+            fit: BoxFit.cover, // Adjust how the image fits within the bounds
+          ),
         ),
-        const SizedBox(width: 5),
+        const SizedBox(width: 16),
         Expanded(
           child: DefaultTextStyle(
             style: const TextStyle(color: Colors.black54),
@@ -94,24 +110,59 @@ class _CartCardState extends State<CartCard> {
                   children: [
                     Expanded(
                       child: Container(
+                        height: 70,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.title.toUpperCase(),
+                              widget.title,
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
                                 color: Colors.black,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                            // const SizedBox(width: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    widget.instructions,
+                                    style: const TextStyle(
+                                      // fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: width30,
+                                ),
+                                GestureDetector(
+                                    onTap: () {
+                                      widget.onDelete();
+                                    },
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.orange,
+                                    )),
+                                SizedBox(
+                                  width: width30,
+                                ),
+                              ],
+                            ),
+                            // const SizedBox(width: 10),
                             Text(
                               '\$${widget.price * quantity}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.orange,
-                                fontSize: 20,
+                                fontSize: 16,
                               ),
                             ),
                           ],
@@ -153,9 +204,9 @@ class _CartCardState extends State<CartCard> {
                                   if (value['title'] == widget.title &&
                                       value['instruction'] ==
                                           widget.instructions) {
-                                    value['quantity'] = quantity;
+                                    value['quantity'] = before + 1;
                                     value['subTotal'] =
-                                        (quantity * value['price']);
+                                        ((before + 1) * value['price']);
                                   }
                                   newJsonData.add(value);
                                 }
@@ -176,7 +227,7 @@ class _CartCardState extends State<CartCard> {
                                       ),
                                       SizedBox(width: 10),
                                       Text(
-                                        'Maximum quantity reached!',
+                                        'We don\'t have that much currently',
                                         style: TextStyle(
                                           color: Colors.white, // Text color
                                           fontSize: 14,
@@ -219,9 +270,10 @@ class _CartCardState extends State<CartCard> {
                                   if (value['title'] == widget.title &&
                                       value['instruction'] ==
                                           widget.instructions) {
-                                    value['quantity'] = quantity;
-                                    value['subtotal'] =
-                                        (quantity * value['price']);
+                                    value['quantity'] -= 1;
+                                    value['subTotal'] =
+                                        ((value['quantity']) * value['price']);
+                                    print(value['subTotal']);
                                   }
                                   newJsonData.add(value);
                                 }
@@ -233,7 +285,7 @@ class _CartCardState extends State<CartCard> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.red,
-                                  content:  Row(
+                                  content: Row(
                                     children: <Widget>[
                                       Icon(
                                         Icons.check_circle,
@@ -242,7 +294,7 @@ class _CartCardState extends State<CartCard> {
                                       ),
                                       SizedBox(width: 10),
                                       Text(
-                                        'Minimum quantity reached!',
+                                        'you can\'t order 0',
                                         style: TextStyle(
                                           color: Colors.white, // Text color
                                           fontSize: 14,

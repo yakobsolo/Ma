@@ -50,11 +50,17 @@ class MenuCard extends StatelessWidget {
     // print("image);
     return Row(
       children: [
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: Image.network("https://maleda-backend.onrender.com/$image"),
-        ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10.0), // Adjust the radius
+          child: Image.network(
+            'https://maleda-backend.onrender.com/$image',
+            width: 100, // Set width as needed
+            height: 100, // Set height as needed
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Image.asset("assets/images/f_0.png",width: 100,height: 100, fit: BoxFit.cover,),), // Adjust how the image fits within the bounds
+              ),
+            
+        
         const SizedBox(width: 16),
         Expanded(
           child: DefaultTextStyle(
